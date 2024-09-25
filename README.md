@@ -16,7 +16,11 @@ The binary will be located at `target/release/pineapple`. Given the tool is unde
 
 ## Downloading
 
-Below we provide examples of how to download data with `pineapple`.
+Below we provide examples of how to download data with `pineapple`. You can also run the following to see available commands and flags.
+
+```bash
+pineapple download --help
+```
 
 ### jump-cpg0016
 
