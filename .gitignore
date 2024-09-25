@@ -1,0 +1,8 @@
+images/
+/target
+helpers/
+test_images/
+data/
+lookup*
+.DS_Store
+**/.DS_Store

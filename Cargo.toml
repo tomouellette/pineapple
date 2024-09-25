@@ -1,0 +1,29 @@
+[package]
+name = "pineapple"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
+# I/O and serialization
+serde = { version = "1.0.55", features = ["derive"] }
+bincode = "1.3.3"
+flate2 = "1.0.33"
+csv = "1.3.0"
+
+# Networking & Filesystem
+reqwest = { version = "0.11", features = ["blocking", "cookies"] }
+tokio = { version = "1", features = ["full"] }
+anyhow = "1.0"
+scraper = "0.12"
+dirs = "4.0"
+
+# Parallelism
+rayon = "1.10.0"
+
+# Parsing
+clap = { version = "4.5.0", features = ["derive"] }
+
+# Helpers
+kdam = {version = "0.5.1", features = ["rayon", "spinner", "template"]}
+chrono = "0.4.31"
+colored = "2.1.0"
