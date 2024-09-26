@@ -4,15 +4,13 @@
 
 ## Installation
 
-`pineapple` can be installed with `cargo`. 
+`pineapple` can be installed from source with `cargo`. 
 
 ```bash
-git clone https://github.com/tomouellette/pineapple
-cd pineapple
-cargo build --release
+cargo install --git https://github.com/tomouellette/pineapple
 ```
 
-The binary will be located at `target/release/pineapple`. Given the tool is under development, we don't have precompiled binaries at this time.
+Given the tool is under development, we don't have precompiled binaries at this time.
 
 ## Downloading
 
