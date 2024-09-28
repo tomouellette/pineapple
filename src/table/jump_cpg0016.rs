@@ -1,13 +1,14 @@
 use std::fs::File;
 use std::path::Path;
 use std::io::BufReader;
-use rayon::prelude::*;
+
+use tokio::fs;
 use csv::ReaderBuilder;
-use kdam::TqdmParallelIterator;
 use flate2::bufread::GzDecoder;
-use crate::card::jump_cpg0016::JumpCpg0016Image;
-use crate::utils::{progress_bar, get_pineapple_cache};
+use futures::stream::{self, StreamExt};
+use crate::utils::get_pineapple_cache;
 use crate::utils::download_gdrive_file;
+use crate::card::jump_cpg0016::JumpCpg0016Image;
 
 const LOOKUP_TABLE: &str = "jump-cpg0016.csv.gz";
 const LOOKUP_ID: &str = "1X-7Im3DYdgw1ITmIy_H4y1nclWDW8Uxh";
@@ -111,36 +112,35 @@ impl JumpCpg0016Table {
     /// let output = Some("output".to_string());
     /// table.download(output, Some(4));
     /// ```
-    pub fn download(&self, output: Option<String>, threads: Option<usize>) {
+    #[tokio::main]
+    pub async fn download(&self, output: Option<String>, threads: Option<usize>) -> Result<(), Box<dyn std::error::Error>> {
         let output_path = Path::new(output.as_deref().unwrap());
-
-        std::fs::create_dir_all(&output_path).unwrap_or_else(|err| {
-            println!("Could not create the directory: {}", err);
+        fs::create_dir_all(&output_path).await.unwrap_or_else(|err| {
+            eprintln!("Could not create the directory: {}", err);
             std::process::exit(1);
         });
 
-        if let Some(threads) = threads {
-            if threads < 1 {
-                println!("Threads must be set to a positive integer");
-                std::process::exit(1);
-            }
+        let n_concurrent = threads.unwrap_or_else(num_cpus::get);
 
-            rayon::ThreadPoolBuilder::new()
-                .num_threads(threads)
-                .build_global()
-                .unwrap();
-        }
-        
-        let pb = progress_bar(self.queries.len(), "Downloading jump-cpg0016 images");
+        // NOTE: Removing the progress bar for now as it generally doesn't work
+        // with this async download implementation. I will try and refactor this 
+        // later so people can track there download progress visually.
+        // let pb = progress_bar(self.queries.len(), "Downloading jump-cpg0016 images");
 
-        self.queries
-            .par_iter()
-            .tqdm_with_bar(pb)
-            .for_each(|query| {
-                query.download(&output_path).unwrap_or_else(|err| {
-                println!("Could not download file: {}", err);
-                std::process::exit(1);
-            });
-        });
+        stream::iter(self.queries.iter())
+            .for_each_concurrent(n_concurrent, |query| {
+                let output_path = output_path.to_path_buf();
+
+                async move {
+                    if let Err(err) = query.download(&output_path).await {
+                        eprintln!("Could not download file: {}", err);
+                    } else {
+                        // let _  = pb.update(1);
+                    }
+                }
+            })
+            .await;
+
+        Ok(())
     }
 }

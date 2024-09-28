@@ -105,12 +105,17 @@ impl JumpCpg0016Image {
     /// # Arguments
     ///
     /// * `output` - Path to save downloaded images
-    #[tokio::main]
     pub async fn download(&self, output: &Path) -> Result<(), Box<dyn std::error::Error>> {
         let prefix = format!("s3://{}/{}/", CPG0016_ROOT, CPG0016_PATH);
         let path = self.path.strip_prefix(&prefix).unwrap();
         let url = format!("https://{}.s3.amazonaws.com/{}/{}{}", CPG0016_ROOT, CPG0016_PATH, path, self.filename);
-        let output_name = output.join(&self.filename);
+
+        // NOTE: This identifier should be unique to each image now although
+        // it's possible there is also redundancy at the batch level (but unlikely)
+        // In practice, when someone downloads a plate-based assay we should format
+        // the output so that each image is stored in a subfolder denoted by plate name
+        let identifier = format!("{}_{}_{}", self.plate, self.well, self.filename);
+        let output_name = output.join(&identifier);
 
         let client = Client::builder()
             .timeout(Duration::from_secs(REQUEST_TIMEOUT_SECS))

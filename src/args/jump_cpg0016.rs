@@ -51,7 +51,7 @@ pub fn download_jump_cpg0016(args: &JumpCpg0016Args) {
         std::process::exit(1);
     }
 
-    progress_log("Initializing jump-cpg0016 image download.");
+    progress_log("Initializing jump-cpg0016 lookup.");
 
     let mut table = JumpCpg0016Table::init();
     
@@ -66,7 +66,11 @@ pub fn download_jump_cpg0016(args: &JumpCpg0016Args) {
 
     let n_queries = table.queries.len();
 
-    progress_log(format!("Detected {} samples for downloading.", n_queries).as_str());
+    progress_log(format!("Detected {} samples.", n_queries).as_str());
 
-    table.download(args.output.to_owned(), args.threads.to_owned());
+    progress_log("Downloading jump-cpg0016 images.");
+
+    let _ = table.download(args.output.to_owned(), args.threads.to_owned());
+
+    progress_log("Download complete.");
 }
