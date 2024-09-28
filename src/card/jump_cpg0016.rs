@@ -138,12 +138,18 @@ impl JumpCpg0016Image {
                     }
                 }
                 Err(e) => {
-                    println!("Failed download attempt {}[Error: {}]", attempt, e);
+                    // NOTE: Make a decision on if we should return information on
+                    // failed requests or not - most times we recover from this in 
+                    // the specified number of retries
+                    // println!("Failed download attempt {}[Error: {}]", attempt, e);
+                    let _ = e;
                 }
             }
 
             if attempt < MAX_RETRIES {
-                println!("Retrying image download in {} seconds...", RETRY_DELAY_SECS);
+                // NOTE: Related to the above note on if we should report failed requests
+                // or not when there's going to be automatic retries anyway
+                // println!("Retrying image download in {} seconds...", RETRY_DELAY_SECS);
                 sleep(Duration::from_secs(RETRY_DELAY_SECS)).await;
             }
         }

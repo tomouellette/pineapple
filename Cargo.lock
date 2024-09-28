@@ -1226,7 +1226,6 @@ dependencies = [
  "futures",
  "kdam",
  "num_cpus",
- "rayon",
  "reqwest",
  "scraper",
  "serde",

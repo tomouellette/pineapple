@@ -18,9 +18,6 @@ anyhow = "1.0"
 scraper = "0.12"
 dirs = "4.0"
 
-# Parallelism
-rayon = "1.10.0"
-
 # Parsing
 clap = { version = "4.5.0", features = ["derive"] }
 
